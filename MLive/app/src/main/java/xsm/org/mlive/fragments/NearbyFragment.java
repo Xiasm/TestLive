@@ -23,13 +23,18 @@ import xsm.org.mlive.entitys.NearbyItem;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NearbyFragment extends Fragment implements NearbyRecyclerAdapter.OnChildClickListener {
+public class NearbyFragment extends BaseFragment implements NearbyRecyclerAdapter.OnChildClickListener {
 
     @BindView(R.id.nearby_recycler)
     RecyclerView mRecyclerView;
     private List<NearbyItem> mList;
     public NearbyFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public String getFragmentTitle() {
+        return "附近";
     }
 
 

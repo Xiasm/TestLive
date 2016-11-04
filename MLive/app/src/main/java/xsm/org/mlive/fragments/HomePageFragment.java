@@ -2,20 +2,28 @@ package xsm.org.mlive.fragments;
 
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import xsm.org.mlive.R;
+import xsm.org.mlive.adapters.CommonFragmentAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class HomePageFragment extends Fragment {
 
-
+    private List<BaseFragment> mList;
+    @BindView(R.id.homepage_viewpager)
+    ViewPager mViewPager;
     public HomePageFragment() {
         // Required empty public constructor
     }
@@ -24,7 +32,16 @@ public class HomePageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_page, container, false);
+        View ret = inflater.inflate(R.layout.fragment_home_page, container, false);
+        ButterKnife.bind(this, ret);
+        mList = new ArrayList<>();
+        mList.add(new AttentionFragment());
+        mList.add(new PopularFragment());
+        mList.add(new NearbyFragment());
+        CommonFragmentAdapter adapter = new CommonFragmentAdapter(getChildFragmentManager(), mList);
+        mViewPager.setAdapter(adapter);
+
+        return ret;
     }
 
 }

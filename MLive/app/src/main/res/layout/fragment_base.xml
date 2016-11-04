@@ -2,12 +2,12 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="xsm.org.mlive.fragments.HomePageFragment">
+             tools:context="xsm.org.mlive.fragments.BaseFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <android.support.v4.view.ViewPager
-        android:id="@+id/homepage_viewpager"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:text="@string/hello_blank_fragment"/>
 
 </FrameLayout>
