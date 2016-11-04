@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+        <ImageView
+            android:id="@+id/nearby_item_header_img"
+            android:src="@mipmap/play_header_img"
+            android:layout_centerVertical="true"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/nearby_item_header_txt"
+            android:text="附近直播"
+            android:textSize="18sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/nearby_item_header_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/nearby_item_header_see"
+            android:text="看全部"
+            android:paddingRight="10dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textColor="#b41605"
+            android:textSize="18sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+</RelativeLayout>

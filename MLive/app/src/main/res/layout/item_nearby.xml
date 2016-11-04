@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="1dp"
+    app:cardCornerRadius="2dp"
+    app:cardUseCompatPadding="true"
+    android:padding="1dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/nearby_item_img"
+            android:src="@mipmap/ic_launcher"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"/>
+        <ImageView
+            android:id="@+id/nearby_item_grade"
+            android:layout_below="@id/nearby_item_img"
+            android:src="@mipmap/grade_24px"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/nearby_item_city"
+            android:text="长沙市"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingRight="2dp"
+            android:layout_toRightOf="@id/nearby_item_grade"
+            android:layout_below="@id/nearby_item_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
