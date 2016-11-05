@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <FrameLayout
-        android:id="@+id/fl_fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
     <RadioGroup
         android:id="@+id/rg_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:background="@android:color/white"
         android:orientation="horizontal">
         <RadioButton
@@ -27,11 +22,22 @@
         <RadioButton
             android:id="@+id/rb_room"
             style="@style/RadioStyle"
-            android:drawableTop="@drawable/live_tab_publish_selector"/>
+            android:clickable="false"/>
         <RadioButton
             android:id="@+id/rb_me"
             style="@style/RadioStyle"
             android:drawableTop="@drawable/live_tab_me_selector"/>
     </RadioGroup>
-
-</LinearLayout>
+    <FrameLayout
+        android:id="@+id/fl_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/rg_bottom_bar"/>
+    <ImageView
+        android:id="@+id/iv_publish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/rg_bottom_bar"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/live_tab_publish_selector"/>
+</RelativeLayout>

@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -20,11 +21,9 @@ import xsm.org.mlive.fragments.MineFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.rg_bottom_bar)
-    RadioGroup mRgBottomBar;
-    @BindView(R.id.rb_home)
-    RadioButton mRbHome;
-
+    @BindView(R.id.rg_bottom_bar) RadioGroup mRgBottomBar;
+    @BindView(R.id.rb_home) RadioButton mRbHome;
+    @BindView(R.id.iv_publish) ImageView mIvPublish;
     private Fragment[] mFragments;
     private int mCurrentCheckedId = View.NO_ID;
     private int mCurrentIndex;
@@ -34,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
         init();
     }
 
@@ -47,22 +45,28 @@ public class MainActivity extends AppCompatActivity {
                 onCheckTab(group, checkedId);
             }
         });
+        mIvPublish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setSelected(true);
+                toRoom();
+                mRgBottomBar.check(mCurrentCheckedId);
+            }
+        });
     }
 
     private void onCheckTab(RadioGroup group, int checkedId) {
         switch (checkedId) {
-            case R.id.rb_room:
-                toRoom();
-                return;
             case R.id.rb_home:
                 index = 0;
                 switchTab(checkedId, index);
-                return;
+                mCurrentCheckedId = R.id.rb_home;
+                break;
             case R.id.rb_me:
                 index = 1;
                 switchTab(checkedId, index);
                 mCurrentCheckedId = R.id.rb_me;
-                return;
+                break;
             default:
                 break;
         }

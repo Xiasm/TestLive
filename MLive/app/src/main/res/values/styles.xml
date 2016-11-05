@@ -7,6 +7,12 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <!--ToolBar样式-->
+    <style name="ToolbarNormal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+    </style>
     <!--RadioButton样式-->
     <style name="RadioStyle">
         <item name="android:layout_width">0dp</item>

@@ -5,10 +5,49 @@
     android:id="@+id/activity_room"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="xsm.org.mlive.activitis.RoomActivity">
+    <SurfaceView
+        android:id="@+id/camera_surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 
+    <Button
+        android:id="@+id/btn_connect"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/to_start"
+        android:visibility="invisible"
+        android:onClick="btnClickStreamingButton"/>
+    <Button
+        android:id="@+id/btn_flash"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/flash_off"
+        android:onClick="btnSwitchFlash"/>
+    <Button
+        android:id="@+id/btn_camera_switch"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/switch_camera"
+        android:onClick="btnSwitchCamera"/>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:visibility="visible"/>
 </RelativeLayout>
