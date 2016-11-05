@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="common_bg">#E6E6EB</color>
+    <color name="common_bg">#05ded6</color>
+
 </resources>

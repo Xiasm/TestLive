@@ -11,7 +11,7 @@
     <style name="ToolbarNormal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:background">@color/common_bg</item>
     </style>
     <!--RadioButton样式-->
     <style name="RadioStyle">
