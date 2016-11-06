@@ -15,7 +15,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.recorder.api.LiveSession;
@@ -26,8 +30,9 @@ import com.baidu.recorder.api.SessionStateListener;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xsm.org.mlive.R;
+import xsm.org.mlive.messages.RoomStateMessage;
 
-public class RoomActivity extends AppCompatActivity {
+public class RoomActivity extends AppCompatActivity implements View.OnClickListener {
 
     private boolean isSessionReady = false;
     private boolean isSessionStarted = false;
@@ -36,23 +41,37 @@ public class RoomActivity extends AppCompatActivity {
     private SessionStateListener mStateListener;
     private Handler mUIEventHandler;
     private static final String TAG = "RoomActivity";
-    @BindView(R.id.camera_surface)
-    SurfaceView mSurfaceView;
-    @BindView(R.id.btn_connect)
-    Button mRecorderButton;
-    @BindView(R.id.btn_flash) Button mFlashStateButton;
-    @BindView(R.id.btn_camera_switch) Button mSwitchStateButton;
-    @BindView(R.id.progressBar)
-    ProgressBar mLoadProgressingBar;
+    @BindView(R.id.camera_surface) SurfaceView mSurfaceView;
+    @BindView(R.id.room_edit_title) EditText mEditTitle;
+    @BindView(R.id.room_start) TextView mStart;
+    @BindView(R.id.room_stop) Button mStop;
+    @BindView(R.id.btn_camera_switch) Button mCameraSwitch;
+    @BindView(R.id.btn_flash_switch) Button mFlashSwitch;
+
+    @BindView(R.id.room_share_layout)
+    LinearLayout mShareLayout;
+    @BindView(R.id.room_share_qq)
+    ImageView shareQQ;
+    @BindView(R.id.room_share_qzone)
+    ImageView shareQZone;
+    @BindView(R.id.room_share_weixin)
+    ImageView shareWeiXin;
+    @BindView(R.id.room_share_weixinzone)
+    ImageView shareWeiXinZone;
+    @BindView(R.id.room_share_weibo)
+    ImageView shareWeiBo;
     private LiveSession mLiveSession;
     private int mCurrentCamera = -1;
     private boolean isFlashOn = false;
+
+    private String shareStr;
 
     private int mVideoWidth = 1280; //设置推流视频宽度, 需传入长的一边
     private int mVideoHeight = 720; // 设置推流视频高度，需传入短的一边
     private int mFrameRate = 15;    // 设置视频帧率
     private int mBitrate = 2048000; // 设置视频码率，单位为bit per seconds
     private String mStreamingUrl = "rtmp://push.bcelive.com/live/2rds0k1c3dipjjxy2m"; // TODO:: Replace it with your streaming url.
+    private RoomStateMessage mRoomStateMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +83,93 @@ public class RoomActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mCurrentCamera = Camera.CameraInfo.CAMERA_FACING_BACK;
         initUIEventHandler();
+        initUIOnclick();
         initStateListener();
         //初始化LiveSession
         initLiveSession(mSurfaceView.getHolder());
+        mRoomStateMessage = new RoomStateMessage();
+    }
 
+    private void initUIOnclick() {
+        mStart.setText("正在初始化中..");
+        mStart.setOnClickListener(this);
+        mStop.setOnClickListener(this);
+        mCameraSwitch.setOnClickListener(this);
+        mFlashSwitch.setOnClickListener(this);
+
+        shareQQ.setOnClickListener(this);
+        shareQZone.setOnClickListener(this);
+        shareWeiXin.setOnClickListener(this);
+        shareWeiXinZone.setOnClickListener(this);
+        shareWeiBo.setOnClickListener(this);
+    }
+
+    private void initUIEventHandler() {
+        mUIEventHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case 0:     //LiveSession准备好了
+                        isSessionReady = true;
+                        mStart.setText("开始直播");
+                        break;
+                    case 6:     //LiveSessionStart调用 开始连接
+                        isConnecting = true;
+                        mStart.setText("正在连接中");
+                        mRoomStateMessage.setRoomTitle(mEditTitle.getText().toString());
+                        mEditTitle.setVisibility(View.GONE);
+                        mShareLayout.setVisibility(View.GONE);
+                        logdState();
+                        break;
+                    case 1:     //当前摄像头不支持所选分辨率
+                        String hint = String.format("注意：当前摄像头不支持您所选择的分辨率\n实际分辨率为%dx%d",
+                                mVideoWidth, mVideoHeight);
+                        Toast.makeText(RoomActivity.this, hint, Toast.LENGTH_LONG).show();
+                        fitPreviewToParentByResolution(mSurfaceView.getHolder(), mVideoWidth, mVideoHeight);
+                        break;
+                    case 2:     //LiveSessionStart完成 读流开始
+                        Log.d(TAG, "读流开始！");
+                        isSessionStarted = true;
+                        isConnecting = false;
+                        mStart.setVisibility(View.GONE);
+                        mStop.setVisibility(View.VISIBLE);
+                        mCameraSwitch.setVisibility(View.VISIBLE);
+                        mFlashSwitch.setVisibility(View.VISIBLE);
+                        break;
+                    case 3:     //读流停止 关闭直播
+                        Log.d(TAG, "关闭流成功！");
+                        isSessionStarted = false;
+                        isConnecting = false;
+                        finish();
+                        break;
+                    case 4:     //显示Toast
+                        String text = (String) msg.obj;
+                        Toast.makeText(RoomActivity.this, text, Toast.LENGTH_SHORT).show();
+                        break;
+                    case 5:     //重新推流
+                        Log.d(TAG, "正在尝试重新连接推流服务器");
+                        if (isSessionReady) {
+                            mLiveSession.startRtmpSession(mStreamingUrl);
+                        }
+                        mUIEventHandler.sendEmptyMessage(6);
+                        break;
+                    case 7:     //重新开启流
+                        if (!isConnecting) {
+                            Log.d(TAG, "重新开启流中！");
+                            isConnecting = true;
+                            if (isSessionReady) {
+                                mLiveSession.stopRtmpSession();
+                            }
+                            mUIEventHandler.sendEmptyMessage(6);
+                        }
+                        break;
+                }
+            }
+        };
+    }
+
+    private void logdState() {
+        Log.d(TAG, mRoomStateMessage.toString());
     }
 
     private void initStateListener() {
@@ -94,9 +196,9 @@ public class RoomActivity extends AppCompatActivity {
                 if (i == SessionStateListener.RESULT_CODE_OF_OPERATION_SUCCEEDED) {
                     if (mUIEventHandler != null) {
                         mUIEventHandler.sendEmptyMessage(2);
+                        //美颜效果
+                        mLiveSession.enableDefaultBeautyEffect(true);
                     }
-                    //美颜效果
-                    mLiveSession.enableDefaultBeautyEffect(true);
                 } else {
                     Log.d(TAG, "开启推流失败！");
                 }
@@ -106,16 +208,11 @@ public class RoomActivity extends AppCompatActivity {
             public void onSessionStopped(int i) {
                 if (i == SessionStateListener.RESULT_CODE_OF_OPERATION_SUCCEEDED) {
                     if (mUIEventHandler != null) {
-//                        if (isSessionReady) {
-////                            mLiveSession.startRtmpSession(mStreamingUrl);
-//                        } else {
-//                            mUIEventHandler.sendEmptyMessage(3);
-//                        }
                         mUIEventHandler.sendEmptyMessage(3);
                     }
                     mLiveSession.enableDefaultBeautyEffect(false);
                 } else {
-                    Log.d(TAG, "关闭流失败！");
+                    Log.d(TAG, "关闭直播失败！");
                 }
             }
 
@@ -159,68 +256,6 @@ public class RoomActivity extends AppCompatActivity {
         };
     }
 
-    private void initUIEventHandler() {
-        mUIEventHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case 0:     //正在准备中
-                        isSessionReady = true;
-                        mLoadProgressingBar.setVisibility(View.GONE);
-                        mRecorderButton.setVisibility(View.VISIBLE);
-                        mRecorderButton.setEnabled(true);
-                        break;
-                    case 1:     //当前摄像头不支持所选分辨率
-                        String hint = String.format("注意：当前摄像头不支持您所选择的分辨率\n实际分辨率为%dx%d",
-                                mVideoWidth, mVideoHeight);
-                        Toast.makeText(RoomActivity.this, hint, Toast.LENGTH_LONG).show();
-                        fitPreviewToParentByResolution(mSurfaceView.getHolder(), mVideoWidth, mVideoHeight);
-                        break;
-                    case 2:     //读流开始
-                        Log.d(TAG, "读流开始！");
-                        isSessionStarted = true;
-                        isConnecting = false;
-                        mRecorderButton.setBackgroundResource(R.drawable.to_stop);
-                        mRecorderButton.setEnabled(true);
-                        break;
-                    case 3:     //读流停止
-                        Log.d(TAG, "关闭流成功！");
-                        isSessionStarted = false;
-                        isConnecting = false;
-                        mRecorderButton.setBackgroundResource(R.drawable.to_start);
-                        mRecorderButton.setEnabled(true);
-                        break;
-                    case 4:     //显示Toast
-                        String text = (String) msg.obj;
-                        Toast.makeText(RoomActivity.this, "text", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 5:     //重新推流
-                        Log.d(TAG, "正在尝试重新连接推流服务器");
-                        if (isSessionReady) {
-                            mLiveSession.startRtmpSession(mStreamingUrl);
-                        }
-                        mUIEventHandler.sendEmptyMessage(6);
-                        break;
-                    case 6:     //连接服务器
-                        isConnecting = true;
-                        mRecorderButton.setBackgroundResource(R.drawable.block);
-                        mRecorderButton.setEnabled(false);
-                        break;
-                    case 7:     //重新开启流
-                        if (!isConnecting) {
-                            Log.d(TAG, "重新开启流中！");
-                            isConnecting = true;
-                            if (isSessionReady) {
-                                mLiveSession.stopRtmpSession();
-                            }
-                            mUIEventHandler.sendEmptyMessage(6);
-                        }
-                        break;
-                }
-            }
-        };
-    }
-
     private void initLiveSession(SurfaceHolder sh) {
         Log.d(TAG, "Calling intiLiveSession: ");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -233,8 +268,111 @@ public class RoomActivity extends AppCompatActivity {
         mLiveSession.prepareSessionAsync();
     }
 
-    public void btnSwitchCamera(View view) {
-        mSwitchStateButton.setEnabled(false);
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.room_start:
+                start();
+                break;
+            case R.id.room_stop:
+                stop();
+                break;
+            case R.id.btn_camera_switch:
+                cameraSwitch();
+                break;
+            case R.id.btn_flash_switch:
+                flashSwitch();
+                break;
+            case R.id.room_share_qq:
+                if (mRoomStateMessage.isQQShare()) {
+                    mRoomStateMessage.setQQShare(!mRoomStateMessage.isQQShare());
+                    shareStr = "qq分享已关闭";
+                    sendToToast();
+                }else {
+                    mRoomStateMessage.setQQShare(!mRoomStateMessage.isQQShare());
+                    shareStr = "qq分享已打开";
+                    sendToToast();
+                }
+                break;
+            case R.id.room_share_qzone:
+                if (mRoomStateMessage.isQZoneShare()) {
+                    mRoomStateMessage.setQZoneShare(!mRoomStateMessage.isQZoneShare());
+                    shareStr = "qq空间分享已关闭";
+                    sendToToast();
+                }else {
+                    mRoomStateMessage.setQZoneShare(!mRoomStateMessage.isQZoneShare());
+                    shareStr = "qq空间分享已打开";
+                    sendToToast();
+                }
+                break;
+            case R.id.room_share_weixin:
+                if (mRoomStateMessage.isWeiXinShare()) {
+                    mRoomStateMessage.setWeiXinShare(!mRoomStateMessage.isWeiXinShare());
+                    shareStr = "微信分享已关闭";
+                    sendToToast();
+                }else {
+                    mRoomStateMessage.setWeiXinShare(!mRoomStateMessage.isWeiXinShare());
+                    shareStr = "微信分享已打开";
+                    sendToToast();
+                }
+                break;
+            case R.id.room_share_weixinzone:
+                if (mRoomStateMessage.isWeiXinQzone()) {
+                    mRoomStateMessage.setWeiXinQzone(!mRoomStateMessage.isWeiXinQzone());
+                    shareStr = "朋友圈分享已关闭";
+                    sendToToast();
+                }else {
+                    mRoomStateMessage.setWeiXinQzone(!mRoomStateMessage.isWeiXinQzone());
+                    shareStr = "朋友圈分享已打开";
+                    sendToToast();
+                }
+                break;
+            case R.id.room_share_weibo:
+                if (mRoomStateMessage.isSinaWeiBoShare()) {
+                    mRoomStateMessage.setSinaWeiBoShare(!mRoomStateMessage.isSinaWeiBoShare());
+                    shareStr = "微博分享已关闭";
+                    sendToToast();
+                }else {
+                    mRoomStateMessage.setSinaWeiBoShare(!mRoomStateMessage.isSinaWeiBoShare());
+                    shareStr = "微博分享已打开";
+                    sendToToast();
+                }
+                break;
+        }
+    }
+
+    private void sendToToast() {
+        Message message = mUIEventHandler.obtainMessage(4);
+        message.obj = shareStr;
+        mUIEventHandler.sendMessage(message);
+    }
+
+    private void stop() {
+        if (isSessionStarted && !isConnecting) {
+            if (mLiveSession.stopRtmpSession()) {
+                mUIEventHandler.sendEmptyMessage(8);
+            }
+        }
+    }
+
+    private void flashSwitch() {
+        mFlashSwitch.setEnabled(false);
+        if (mCurrentCamera == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            mLiveSession.toggleFlash(!isFlashOn);
+            isFlashOn = !isFlashOn;
+            if (isFlashOn) {
+                mFlashSwitch.setBackgroundResource(R.drawable.flash_on);
+            } else {
+                mFlashSwitch.setBackgroundResource(R.drawable.flash_off);
+            }
+        } else {
+            Toast.makeText(this, "抱歉！前置摄像头不支持切换闪光灯！", Toast.LENGTH_SHORT).show();
+        }
+        mFlashSwitch.setEnabled(true);
+    }
+
+    private void cameraSwitch() {
+        mCameraSwitch.setEnabled(false);
         if (mLiveSession.canSwitchCamera()) {
             if (mCurrentCamera == Camera.CameraInfo.CAMERA_FACING_BACK) {
                 mCurrentCamera = Camera.CameraInfo.CAMERA_FACING_FRONT;
@@ -244,41 +382,19 @@ public class RoomActivity extends AppCompatActivity {
                 mLiveSession.switchCamera(mCurrentCamera);
             }
             isFlashOn = false;
-            mFlashStateButton.setBackgroundResource(R.drawable.flash_off);
+            mFlashSwitch.setBackgroundResource(R.drawable.flash_off);
         } else {
             Toast.makeText(this, "抱歉！该分辨率下不支持切换摄像头！", Toast.LENGTH_SHORT).show();
         }
-        mSwitchStateButton.setEnabled(true);
+        mCameraSwitch.setEnabled(true);
     }
 
-    public void btnSwitchFlash(View view) {
-        mFlashStateButton.setEnabled(false);
-        if (mCurrentCamera == Camera.CameraInfo.CAMERA_FACING_BACK) {
-            mLiveSession.toggleFlash(!isFlashOn);
-            isFlashOn = !isFlashOn;
-            if (isFlashOn) {
-                mFlashStateButton.setBackgroundResource(R.drawable.flash_on);
-            } else {
-                mFlashStateButton.setBackgroundResource(R.drawable.flash_off);
-            }
-        } else {
-            Toast.makeText(this, "抱歉！前置摄像头不支持切换闪光灯！", Toast.LENGTH_SHORT).show();
-        }
-        mFlashStateButton.setEnabled(true);
-    }
-
-    public void btnClickStreamingButton(View view) {
-        if (!isSessionReady) {
+    private void start() {
+        if (!isSessionReady)
             return;
-        }
         if (!isSessionStarted && !TextUtils.isEmpty(mStreamingUrl)) {
             //session没有开始并且url不为null
             if (mLiveSession.startRtmpSession(mStreamingUrl)) {
-                mUIEventHandler.sendEmptyMessage(6);
-            }
-        } else {
-            //关闭直播操作
-            if (mLiveSession.stopRtmpSession()) {
                 mUIEventHandler.sendEmptyMessage(6);
             }
         }
@@ -366,4 +482,6 @@ public class RoomActivity extends AppCompatActivity {
         }
         holder.setFixedSize(adjustedVideoWidth, adjustedVideoHeight);
     }
+
+
 }

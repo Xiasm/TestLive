@@ -11,19 +11,70 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"/>
-
-    <Button
-        android:id="@+id/btn_connect"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+    <EditText
+        android:id="@+id/room_edit_title"
+        android:layout_marginTop="58dp"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/to_start"
-        android:visibility="invisible"
-        android:onClick="btnClickStreamingButton"/>
+        android:padding="30dp"
+        android:hint="给直播写个标题吧！"
+        android:textColorHint="#1147c6"
+        android:textColor="#fcf3f7f3"
+        android:background="@null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/room_start"
+        android:visibility="visible"
+        android:layout_centerInParent="true"
+        android:textSize="30sp"
+        android:padding="10dp"
+        android:background="@drawable/bg_room_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:id="@+id/room_share_layout"
+        android:layout_below="@id/room_start"
+        android:visibility="visible"
+        android:paddingTop="20dp"
+        android:background="#007b6464"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/room_share_qq"
+            android:src="@drawable/ssdk_oks_classic_qq"
+            android:layout_weight="1"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+        <ImageView
+            android:id="@+id/room_share_qzone"
+            android:src="@drawable/ssdk_oks_classic_qzone"
+            android:layout_weight="1"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+        <ImageView
+            android:id="@+id/room_share_weixin"
+            android:src="@drawable/ssdk_oks_classic_wechat"
+            android:layout_weight="1"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+        <ImageView
+            android:id="@+id/room_share_weixinzone"
+            android:src="@drawable/ssdk_oks_classic_wechatmoments"
+            android:layout_weight="1"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+        <ImageView
+            android:id="@+id/room_share_weibo"
+            android:src="@drawable/ssdk_oks_classic_sinaweibo"
+            android:layout_weight="1"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+    </LinearLayout>
     <Button
-        android:id="@+id/btn_flash"
+        android:id="@+id/btn_flash_switch"
+        android:visibility="invisible"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_alignParentLeft="true"
@@ -31,9 +82,10 @@
         android:layout_marginBottom="30dp"
         android:layout_marginRight="30dp"
         android:background="@drawable/flash_off"
-        android:onClick="btnSwitchFlash"/>
+        />
     <Button
         android:id="@+id/btn_camera_switch"
+        android:visibility="invisible"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_alignParentRight="true"
@@ -41,13 +93,16 @@
         android:layout_marginBottom="30dp"
         android:layout_marginRight="30dp"
         android:background="@drawable/switch_camera"
-        android:onClick="btnSwitchCamera"/>
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        />
+    <Button
+        android:id="@+id/room_stop"
+        android:visibility="invisible"
+        android:background="@drawable/room_stop"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
-        android:visibility="visible"/>
+        android:layout_marginBottom="30dp"
+        android:layout_marginRight="30dp"
+        />
 </RelativeLayout>
