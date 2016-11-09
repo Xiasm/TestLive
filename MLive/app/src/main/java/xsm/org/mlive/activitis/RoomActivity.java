@@ -483,5 +483,4 @@ public class RoomActivity extends AppCompatActivity implements View.OnClickListe
         holder.setFixedSize(adjustedVideoWidth, adjustedVideoHeight);
     }
 
-
 }

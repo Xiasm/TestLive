@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -15,6 +16,7 @@ import android.widget.RadioGroup;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.vov.vitamio.LibsChecker;
 import xsm.org.mlive.activitis.RoomActivity;
 import xsm.org.mlive.fragments.HomePageFragment;
 import xsm.org.mlive.fragments.MineFragment;
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private int mCurrentCheckedId = View.NO_ID;
     private int mCurrentIndex;
     private int index;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         init();
     }
+
 
     private void init() {
         mFragments = new Fragment[]{new HomePageFragment(), new MineFragment()};

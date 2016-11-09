@@ -1,6 +1,7 @@
 package xsm.org.mlive.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +18,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import xsm.org.mlive.R;
+import xsm.org.mlive.activitis.StreamMediaActivity;
 import xsm.org.mlive.adapters.NearbyRecyclerAdapter;
 import xsm.org.mlive.entitys.NearbyItem;
 
@@ -68,5 +70,6 @@ public class NearbyFragment extends BaseFragment implements NearbyRecyclerAdapte
     @Override
     public void onChildClick(RecyclerView parent, View view, int position) {
         Toast.makeText(getContext(), "第" + position + "主播被点击", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(getContext(), StreamMediaActivity.class));
     }
 }
